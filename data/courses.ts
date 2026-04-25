@@ -50,4 +50,42 @@ export const courses = [
     ],
     specialRule: "FIS1533_CATEDRA_LAB_MINIMUM",
   },
+  {
+    id: "metodos-optimizacion-2026-1",
+    code: "ICS2121",
+    name: "Métodos de Optimización",
+    semester: "2026-1",
+    passingGrade: 4.0,
+    formulaDescription:
+      "NF = 25% NT + 75% NP. NT es el promedio de 3 tareas. NP es el promedio de I1, I2 y Examen, donde el Examen reemplaza la peor interrogación si es mayor. Para aprobar, NT y NP deben ser al menos 4.0.",
+    evaluations: [
+      { id: "i1", name: "Interrogación 1", weight: null },
+      { id: "i2", name: "Interrogación 2", weight: null },
+      { id: "exam", name: "Examen", weight: null },
+      { id: "t1", name: "Tarea 1", weight: null },
+      { id: "t2", name: "Tarea 2", weight: null },
+      { id: "t3", name: "Tarea 3", weight: null },
+    ],
+    specialRule: "EXAM_REPLACES_LOWEST_TEST",
+  },
+  {
+    id: "bases-de-datos-2026-1",
+    code: "IIC2413",
+    name: "Bases de Datos",
+    semester: "2026-1",
+    passingGrade: 4.0,
+    formulaDescription:
+      "NF = 50% C + 50% P. C = (I1 + I2 + 1.5 × Examen) / 3.5. P depende del puntaje del proyecto, asistencia y prueba final del proyecto. Para aprobar: NF ≥ 4.0, C ≥ 3.9, P ≥ 3.9 y prueba proyecto ≥ 60%.",
+    evaluations: [
+      { id: "i1", name: "Interrogación 1", weight: null },
+      { id: "i2", name: "Interrogación 2", weight: null },
+      { id: "exam", name: "Examen", weight: null },
+      { id: "e1", name: "Proyecto etapa 1 / 30 pts", weight: null },
+      { id: "e2", name: "Proyecto etapa 2 / 30 pts", weight: null },
+      { id: "e3", name: "Proyecto etapa 3 / 40 pts", weight: null },
+      { id: "attendance", name: "Asistencia ayudantías (%)", weight: null },
+      { id: "projectTest", name: "Prueba proyecto (%)", weight: null },
+    ],
+    specialRule: "THEORY_PROJECT_WITH_PROJECT_GATE",
+  },
 ];

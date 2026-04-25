@@ -60,3 +60,4 @@ Además, la app contempla una funcionalidad para subir el programa del curso en 
 ├── /courses/[id] Vista de cálculo por ramo
 ├── /add-course Subida de programa del curso
 └── /grade-scale Herramienta de escala de notas
+```
