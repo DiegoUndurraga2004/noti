@@ -24,19 +24,36 @@ export default function CourseClient({ course }: { course: Course }) {
     localStorage.setItem(`grades-${course.id}`, JSON.stringify(grades));
   }, [grades, course.id, hasLoadedGrades]);
 
-  const handleChange = (evaluationId: string, value: string) => {
+  const handleChange = (
+    evaluation: Course["evaluations"][number],
+    value: string
+  ) => {
     if (value === "") {
       setGrades((prev) => {
         const updated = { ...prev };
-        delete updated[evaluationId];
+        delete updated[evaluation.id];
         return updated;
       });
       return;
     }
 
+    if (value.includes(",")) return;
+
+    const numericValue = Number(value);
+
+    if (!Number.isFinite(numericValue)) return;
+
+    const min =
+      evaluation.min ?? (evaluation.inputType === "grade" ? 1 : undefined);
+    const max =
+      evaluation.max ?? (evaluation.inputType === "grade" ? 7 : undefined);
+
+    if (min !== undefined && numericValue < min) return;
+    if (max !== undefined && numericValue > max) return;
+
     setGrades((prev) => ({
       ...prev,
-      [evaluationId]: Number(value),
+      [evaluation.id]: numericValue,
     }));
   };
 
@@ -63,6 +80,16 @@ export default function CourseClient({ course }: { course: Course }) {
   const formatDetailValue = (value: number | string, decimals: number = 2) => {
     if (typeof value === "string") return value;
     return truncate(value, decimals);
+  };
+
+  const blockedNumberKeys = ["e", "E", "+", "-", ","];
+
+  const getPlaceholder = (evaluation: Course["evaluations"][number]) => {
+    if (evaluation.inputType === "grade") return "4.0";
+    if (evaluation.inputType === "percent") return "70";
+    if (evaluation.inputType === "points") return "0";
+
+    return "4.0";
   };
 
   return (
@@ -99,10 +126,15 @@ export default function CourseClient({ course }: { course: Course }) {
               min={ev.min}
               max={ev.max}
               step={ev.step ?? 0.1}
-              placeholder="Valor"
               value={grades[ev.id] ?? ""}
               className="w-24 p-2 rounded bg-slate-800 text-white border border-slate-600"
-              onChange={(e) => handleChange(ev.id, e.target.value)}
+              placeholder={getPlaceholder(ev)}
+              onKeyDown={(e) => {
+                if (blockedNumberKeys.includes(e.key)) {
+                  e.preventDefault();
+                }
+              }}
+              onChange={(e) => handleChange(ev, e.target.value)}
             />
           </div>
         ))}
@@ -111,23 +143,23 @@ export default function CourseClient({ course }: { course: Course }) {
       <div className="mt-8 bg-slate-900 border border-slate-700 rounded-xl p-4 space-y-3">
         <p className="font-semibold">Resultado</p>
         {result.alerts && result.alerts.length > 0 && (
-            <div className="space-y-2">
-              {result.alerts.map((alert) => (
-                <p
-                  key={alert.message}
-                  className={
-                    alert.type === "success"
-                      ? "text-green-400"
-                      : alert.type === "danger"
-                        ? "text-red-400"
-                        : "text-yellow-400"
-                  }
-                >
-                  {alert.message}
-                </p>
-              ))}
-            </div>
-          )}
+          <div className="space-y-2">
+            {result.alerts.map((alert) => (
+              <p
+                key={alert.message}
+                className={
+                  alert.type === "success"
+                    ? "text-green-400"
+                    : alert.type === "danger"
+                      ? "text-red-400"
+                      : "text-yellow-400"
+                }
+              >
+                {alert.message}
+              </p>
+            ))}
+          </div>
+        )}
         {result.details.length > 0 && (
           <div className="space-y-1">
             {result.details.map((detail) => (
