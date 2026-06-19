@@ -17,47 +17,47 @@ export type WeightedItem = {
 
 export type Formula =
   | {
-      type: "EVALUATION";
+    type: "EVALUATION";
+    evaluationId: string;
+  }
+  | {
+    type: "AVERAGE";
+    evaluationIds: string[];
+  }
+  | {
+    type: "WEIGHTED_AVERAGE";
+    items: WeightedItem[];
+  }
+  | {
+    type: "TOP_N_AVERAGE";
+    n: number;
+    items: Formula[];
+  }
+  | {
+    type: "EXAM_REPLACES_LOWEST_TESTS";
+    testIds: string[];
+    examId: string;
+  }
+  | {
+    type: "POINTS_TO_GRADE";
+    items: {
       evaluationId: string;
-    }
-  | {
-      type: "AVERAGE";
-      evaluationIds: string[];
-    }
-  | {
-      type: "WEIGHTED_AVERAGE";
-      items: WeightedItem[];
-    }
-  | {
-      type: "TOP_N_AVERAGE";
-      n: number;
-      items: Formula[];
-    }
-  | {
-      type: "EXAM_REPLACES_LOWEST_TESTS";
-      testIds: string[];
-      examId: string;
-    }
-  | {
-      type: "POINTS_TO_GRADE";
-      items: {
-        evaluationId: string;
-        maxPoints: number;
+      maxPoints: number;
+    }[];
+    attendanceFactor?: {
+      evaluationId: string;
+      defaultFactor: number;
+      thresholds: {
+        min: number;
+        factor: number;
       }[];
-      attendanceFactor?: {
-        evaluationId: string;
-        defaultFactor: number;
-        thresholds: {
-          min: number;
-          factor: number;
-        }[];
-      };
-      gate?: {
-        evaluationId: string;
-        minimum: number;
-        failValue: number;
-      };
     };
+    gate?: {
+      evaluationId: string;
+      minimum: number;
+      failValue: number;
+    };
+  };
 
 export type ComponentRule = {
   id: string;
@@ -70,24 +70,24 @@ export type ComponentRule = {
 
 export type CourseRule =
   | {
-      type: "WEIGHTED_AVERAGE";
-      items: WeightedItem[];
-    }
+    type: "WEIGHTED_AVERAGE";
+    items: WeightedItem[];
+  }
   | {
-      type: "TOP_N_AVERAGE";
-      n: number;
-      items: Formula[];
-    }
+    type: "TOP_N_AVERAGE";
+    n: number;
+    items: Formula[];
+  }
   | {
-      type: "WEIGHTED_COMPONENTS";
-      components: ComponentRule[];
-      failStrategy?: "CAP_AT_3_9" | "MIN_COMPONENT" | "NONE";
-      gateFailStrategy?: {
-        type: "USE_COMPONENT_CAP";
-        componentId: string;
-        cap: number;
-      };
+    type: "WEIGHTED_COMPONENTS";
+    components: ComponentRule[];
+    failStrategy?: "CAP_AT_3_9" | "MIN_COMPONENT" | "NONE";
+    gateFailStrategy?: {
+      type: "USE_COMPONENT_CAP";
+      componentId: string;
+      cap: number;
     };
+  };
 
 export type Course = {
   id: string;
@@ -236,14 +236,14 @@ export const courses: Course[] = [
     },
   },
   {
-    //Electro
+    // Electro
     id: "electricidad-magnetismo-2026-1",
     code: "FIS1533",
     name: "Electricidad y Magnetismo",
     semester: "2026-1",
     passingGrade: 4.0,
     formulaDescription:
-      "NFC = 30% I1 + 30% I2 + 30% Examen + 10% Controles. Si NL >= 4.0 y NFC >= 4.0, NF = 70% NFC + 30% NL. Si no, NF = min(NFC, NL).",
+      "NFC = 30% I1 + 30% I2 + 30% Examen + 10% Controles. Los controles se promedian entre C1, C2 y C3. Si NL >= 4.0 y NFC >= 4.0, NF = 70% NFC + 30% NL. Si no, NF = min(NFC, NL).",
     evaluations: [
       {
         id: "i1",
@@ -270,8 +270,24 @@ export const courses: Course[] = [
         step: 0.1,
       },
       {
-        id: "controls",
-        name: "Promedio controles",
+        id: "c1",
+        name: "Control 1",
+        inputType: "grade",
+        min: 1,
+        max: 7,
+        step: 0.1,
+      },
+      {
+        id: "c2",
+        name: "Control 2",
+        inputType: "grade",
+        min: 1,
+        max: 7,
+        step: 0.1,
+      },
+      {
+        id: "c3",
+        name: "Control 3",
         inputType: "grade",
         min: 1,
         max: 7,
@@ -301,7 +317,9 @@ export const courses: Course[] = [
               { evaluationId: "i1", weight: 30 },
               { evaluationId: "i2", weight: 30 },
               { evaluationId: "exam", weight: 30 },
-              { evaluationId: "controls", weight: 10 },
+              { evaluationId: "c1", weight: 10 / 3 },
+              { evaluationId: "c2", weight: 10 / 3 },
+              { evaluationId: "c3", weight: 10 / 3 },
             ],
           },
         },
