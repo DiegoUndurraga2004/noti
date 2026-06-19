@@ -17,47 +17,47 @@ export type WeightedItem = {
 
 export type Formula =
   | {
-    type: "EVALUATION";
-    evaluationId: string;
-  }
-  | {
-    type: "AVERAGE";
-    evaluationIds: string[];
-  }
-  | {
-    type: "WEIGHTED_AVERAGE";
-    items: WeightedItem[];
-  }
-  | {
-    type: "TOP_N_AVERAGE";
-    n: number;
-    items: Formula[];
-  }
-  | {
-    type: "EXAM_REPLACES_LOWEST_TESTS";
-    testIds: string[];
-    examId: string;
-  }
-  | {
-    type: "POINTS_TO_GRADE";
-    items: {
+      type: "EVALUATION";
       evaluationId: string;
-      maxPoints: number;
-    }[];
-    attendanceFactor?: {
-      evaluationId: string;
-      defaultFactor: number;
-      thresholds: {
-        min: number;
-        factor: number;
+    }
+  | {
+      type: "AVERAGE";
+      evaluationIds: string[];
+    }
+  | {
+      type: "WEIGHTED_AVERAGE";
+      items: WeightedItem[];
+    }
+  | {
+      type: "TOP_N_AVERAGE";
+      n: number;
+      items: Formula[];
+    }
+  | {
+      type: "EXAM_REPLACES_LOWEST_TESTS";
+      testIds: string[];
+      examId: string;
+    }
+  | {
+      type: "POINTS_TO_GRADE";
+      items: {
+        evaluationId: string;
+        maxPoints: number;
       }[];
+      attendanceFactor?: {
+        evaluationId: string;
+        defaultFactor: number;
+        thresholds: {
+          min: number;
+          factor: number;
+        }[];
+      };
+      gate?: {
+        evaluationId: string;
+        minimum: number;
+        failValue: number;
+      };
     };
-    gate?: {
-      evaluationId: string;
-      minimum: number;
-      failValue: number;
-    };
-  };
 
 export type ComponentRule = {
   id: string;
@@ -70,24 +70,24 @@ export type ComponentRule = {
 
 export type CourseRule =
   | {
-    type: "WEIGHTED_AVERAGE";
-    items: WeightedItem[];
-  }
+      type: "WEIGHTED_AVERAGE";
+      items: WeightedItem[];
+    }
   | {
-    type: "TOP_N_AVERAGE";
-    n: number;
-    items: Formula[];
-  }
+      type: "TOP_N_AVERAGE";
+      n: number;
+      items: Formula[];
+    }
   | {
-    type: "WEIGHTED_COMPONENTS";
-    components: ComponentRule[];
-    failStrategy?: "CAP_AT_3_9" | "MIN_COMPONENT" | "NONE";
-    gateFailStrategy?: {
-      type: "USE_COMPONENT_CAP";
-      componentId: string;
-      cap: number;
+      type: "WEIGHTED_COMPONENTS";
+      components: ComponentRule[];
+      failStrategy?: "CAP_AT_3_9" | "MIN_COMPONENT" | "NONE";
+      gateFailStrategy?: {
+        type: "USE_COMPONENT_CAP";
+        componentId: string;
+        cap: number;
+      };
     };
-  };
 
 export type Course = {
   id: string;

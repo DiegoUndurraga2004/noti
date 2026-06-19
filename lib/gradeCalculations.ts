@@ -693,7 +693,7 @@ function calculateGenericNeededAverage(
       alert: {
         type: "success",
         message:
-          "Ya estás en buen camino: incluso con la nota mínima en lo restante, aprobarías el curso.",
+          "Ya has pasado el ramo: incluso con la nota mínima en lo restante, aprobarías.",
       },
     };
   }
@@ -704,7 +704,7 @@ function calculateGenericNeededAverage(
       alert: {
         type: "danger",
         message:
-          "Con las notas actuales, no alcanza para aprobar aunque obtengas 7.0 en todas las evaluaciones restantes.",
+          "No alcanza para aprobar: aunque obtengas 7.0 en todo lo restante, no llegarías a aprobar.",
       },
     };
   }
@@ -730,7 +730,7 @@ function calculateGenericNeededAverage(
     alert: {
       type: "warning",
       message:
-        "Este cálculo asume que obtienes la misma nota en todas las evaluaciones restantes.",
+        "Supuesto: este cálculo usa la misma nota en todas las evaluaciones restantes.",
     },
   };
 }

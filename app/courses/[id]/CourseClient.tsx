@@ -92,6 +92,39 @@ export default function CourseClient({ course }: { course: Course }) {
     return "4.0";
   };
 
+  const getAlertClass = (type: "success" | "warning" | "danger") => {
+    if (type === "success") {
+      return "rounded-lg border border-green-500/30 bg-green-500/10 p-3 text-green-300";
+    }
+
+    if (type === "danger") {
+      return "rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-red-300";
+    }
+
+    return "rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-3 text-yellow-300";
+  };
+
+  const formatNeededLabel = (label: string) => {
+    if (label.includes("Nota necesaria en cada evaluación restante")) {
+      return "Necesitas en cada evaluación restante";
+    }
+
+    if (label.startsWith("Promedio necesario en lo restante de")) {
+      return label
+        .replace(
+          "Promedio necesario en lo restante de ",
+          "Necesitas promedio en lo que falta de "
+        )
+        .replace(" para llegar al mínimo", "");
+    }
+
+    if (label.startsWith("Nota mínima necesaria en")) {
+      return label.replace("Nota mínima necesaria en", "Necesitas al menos en");
+    }
+
+    return label;
+  };
+
   return (
     <main className="min-h-screen bg-slate-950 p-8 text-white">
       <h1 className="text-2xl font-bold mb-2">
@@ -101,6 +134,16 @@ export default function CourseClient({ course }: { course: Course }) {
       <p className="text-slate-400 mb-6">{course.code}</p>
 
       <p className="text-slate-300 mb-6">{course.formulaDescription}</p>
+
+      <div className="mb-6 rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4 text-sm text-yellow-200">
+        <p className="font-semibold">Importante</p>
+        <p>
+          Noti es una herramienta de apoyo para estimar tus notas. Es
+          responsabilidad de cada estudiante corroborar los cálculos con el
+          programa oficial del curso y las reglas informadas por el equipo
+          docente.
+        </p>
+      </div>
 
       <button
         type="button"
@@ -140,56 +183,70 @@ export default function CourseClient({ course }: { course: Course }) {
         ))}
       </div>
 
-      <div className="mt-8 bg-slate-900 border border-slate-700 rounded-xl p-4 space-y-3">
-        <p className="font-semibold">Resultado</p>
+      <div className="mt-8 rounded-xl border border-slate-700 bg-slate-900 p-5 space-y-4">
+        <div>
+          <p className="text-xl font-bold">Resultado</p>
+          <p className="text-sm text-slate-400">
+            Los valores se actualizan automáticamente al ingresar tus notas.
+          </p>
+        </div>
+
         {result.alerts && result.alerts.length > 0 && (
           <div className="space-y-2">
             {result.alerts.map((alert) => (
-              <p
-                key={alert.message}
-                className={
-                  alert.type === "success"
-                    ? "text-green-400"
-                    : alert.type === "danger"
-                      ? "text-red-400"
-                      : "text-yellow-400"
-                }
-              >
+              <p key={alert.message} className={getAlertClass(alert.type)}>
                 {alert.message}
               </p>
             ))}
           </div>
         )}
+
         {result.details.length > 0 && (
-          <div className="space-y-1">
+          <div className="space-y-2">
             {result.details.map((detail) => (
-              <p key={`${detail.label}-${String(detail.value)}`}>
-                {detail.label}:{" "}
-                {formatDetailValue(detail.value, detail.decimals)}
-              </p>
+              <div
+                key={`${detail.label}-${String(detail.value)}`}
+                className="flex justify-between gap-4 border-b border-slate-800 pb-2 last:border-b-0"
+              >
+                <span className="text-slate-300">{detail.label}</span>
+                <span className="font-medium text-white">
+                  {formatDetailValue(detail.value, detail.decimals)}
+                </span>
+              </div>
             ))}
           </div>
         )}
 
         {result.needed.length > 0 && (
-          <div className="space-y-1">
+          <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-4 space-y-2">
+            <p className="font-semibold text-blue-300">Qué necesitas</p>
+
             {result.needed.map((needed) => (
-              <p key={needed.label}>
-                {needed.label}: {formatNeededGrade(needed.value)}
-              </p>
+              <div
+                key={needed.label}
+                className="flex justify-between gap-4 text-blue-100"
+              >
+                <span>{formatNeededLabel(needed.label)}</span>
+                <span className="font-bold">
+                  {formatNeededGrade(needed.value)}
+                </span>
+              </div>
             ))}
           </div>
         )}
 
         {!result.isComplete && (
-          <p className="text-slate-400">{result.message}</p>
+          <p className="text-sm text-slate-400">{result.message}</p>
         )}
 
         {result.isComplete && result.finalGrade !== null && (
-          <p>
-            Nota final estimada: {truncate(result.finalGrade)}{" "}
-            {result.passed ? "✅ Aprobado" : "❌ Reprobado"}
-          </p>
+          <div className="rounded-xl border border-slate-700 bg-slate-950 p-4">
+            <p className="text-sm text-slate-400">Nota final estimada</p>
+            <p className="text-2xl font-bold">
+              {truncate(result.finalGrade)}{" "}
+              {result.passed ? "✅ Aprobado" : "❌ Reprobado"}
+            </p>
+          </div>
         )}
       </div>
     </main>
